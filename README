@@ -1,0 +1,5 @@
+This software is designed to provide an easy way to perform clean room reverse
+engineering of binary file formats. It is not capable of figuring things out
+for the user. Instead, it is designed to make it easy to figure out the
+differences between files after changes have been made using a proprietary
+application. 
