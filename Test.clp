@@ -10,5 +10,5 @@
 ; ((gensym*) of File (Parent a0) (FileContents (random) (random) (random)
 ;	 (random) (random))))
 ;(reset)
-(load-file "Characters\Midnight")
-(load-file "Characters\Cindred")
+(load-file "Characters/Midnight")
+(load-file "Characters/Cindred")
