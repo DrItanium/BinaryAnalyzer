@@ -3,3 +3,7 @@ engineering of binary file formats. It is not capable of figuring things out
 for the user. Instead, it is designed to make it easy to figure out the
 differences between files after changes have been made using a proprietary
 application. 
+
+Also, this analyzer suite requires the CLIPS expert system. CLIPS can be
+downloaded at http://clipsrules.sourceforge.net. You are going to need to be
+running 6.30 Beta or higher as that's the version I am targeting.
