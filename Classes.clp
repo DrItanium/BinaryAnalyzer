@@ -13,7 +13,19 @@
  (bind ?self:ID (instance-name-to-symbol (instance-name ?self))))
 
 ;------------------------------------------------------------------------------
-(defclass BinaryFile (is-a ReflectiveObject)
- (multislot FileContents (type NUMBER)))
+(defclass File (is-a ReflectiveObject)
+ (multislot FileContents (type NUMBER SYMBOL)))
+
+(deffunction load-file (?path)
+ (open ?path tmpFile)
+ (bind ?obj (make-instance (gensym*) of File))
+ (bind ?tmp (get-char tmpFile))
+ (bind ?contents (create$ ?tmp))
+ (while (neq ?tmp -1) do 
+ (bind ?contents (create$ ?contents ?tmp))
+ (bind ?tmp (get-char tmpFile)))
+ (send ?obj put-FileContents ?contents)
+ (close tmpFile)
+ (return ?obj))
 ;------------------------------------------------------------------------------
 
