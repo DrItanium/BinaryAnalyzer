@@ -11,8 +11,8 @@
 (defrule AssertDifferenceInLength
  "Checks to see if two files of the same group have different total lengths"
  (declare (salience 2))
- ?file0 <- (object (is-a BinaryFile) (ID ?id) (Parent ?p) (FileContents $?a)) 
- ?file1 <- (object (is-a BinaryFile) (ID ~?id) (Parent ?p) (FileContents $?b))
+ ?file0 <- (object (is-a File) (ID ?id) (Parent ?p) (FileContents $?a)) 
+ ?file1 <- (object (is-a File) (ID ~?id) (Parent ?p) (FileContents $?b))
  (test (neq (length ?a) (length ?b)))
  =>
  (bind ?la (length ?a))
@@ -28,8 +28,8 @@
  "Takes two different files and compares their contents. It will only do this
  on files within the same group. This group is defined in the Parent field"
  (declare (salience 2))
- (object (is-a BinaryFile) (ID ?id) (Parent ?p) (FileContents $?a ?curr $?))
- (object (is-a BinaryFile) (ID ?id1&~?id) (Parent ?p) (FileContents $?b  ?curr2&~?curr $?))
+ (object (is-a File) (ID ?id) (Parent ?p) (FileContents $?a ?curr $?))
+ (object (is-a File) (ID ?id1&~?id) (Parent ?p) (FileContents $?b  ?curr2&~?curr $?))
  (test (eq (length ?a) (length ?b)))
  =>
  (assert (Difference ?id ?id1 Bytes ?curr ?curr2 at (length ?a))))
@@ -64,4 +64,32 @@
  (retract ?diff)
  (printout t "Files " ?f0 " and " ?f1 " have different values at position "
   ?ind " being " ?c0 " and " ?c1 " respectively." crlf))
+;------------------------------------------------------------------------------
+(defrule MarkSimilarity 
+ "Takes two different files and compares their contents. It will only do this
+ on files within the same group. This group is defined in the Parent field"
+ (declare (salience 2))
+ (object (is-a File) (ID ?id) (Parent ?p) (FileContents $?a ?curr $?))
+ (object (is-a File) (ID ?id1&~?id) (Parent ?p) (FileContents $?b  ?curr $?))
+ (test (eq (length ?a) (length ?b)))
+ =>
+ (assert (Commonality ?id ?id1 Byte ?curr at (length ?a))))
+;------------------------------------------------------------------------------
+(defrule MergeSimilarities
+ "Merges similarities if they are only different by transposed files. This has
+ the side effect of reducing the amount of redundant information given to the
+ programmer at the end of execution"
+ (declare (salience 1))
+ ?c0 <- (Commonality ?id0 ?id1 Byte ?curr at ?l)
+ ?c1 <- (Commonality ?id1 ?id0 Byte ?curr at ?l)
+ =>
+ (retract ?c0 ?c1)
+ (assert (Commonality ?id0 ?id1 Byte ?curr at ?l)))
+;------------------------------------------------------------------------------
+(defrule PrintoutSimilarities
+ ?diff <- (Commonality ?id0 ?id1 Byte ?curr at ?len)
+ =>
+ (retract ?diff)
+ (printout t "The byte " ?curr " is the same in files " ?id0 " and " ?id1 
+  " at position " ?len crlf))
 ;------------------------------------------------------------------------------
