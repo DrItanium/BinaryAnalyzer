@@ -10,7 +10,7 @@
 ;------------------------------------------------------------------------------
 (defrule AssertDifferenceInLength
  "Checks to see if two files of the same group have different total lengths"
- (declare (salience 1))
+ (declare (salience 2))
  ?file0 <- (object (is-a BinaryFile) (ID ?id) (Parent ?p) (FileContents $?a)) 
  ?file1 <- (object (is-a BinaryFile) (ID ~?id) (Parent ?p) (FileContents $?b))
  (test (neq (length ?a) (length ?b)))
@@ -23,27 +23,45 @@
   else
   (bind ?diff (- ?lb ?la))
   (assert (File (send ?file1 get-ID) longer than (send ?file0 get-ID) by ?diff))))
-
+;------------------------------------------------------------------------------
 (defrule MarkDifference
  "Takes two different files and compares their contents. It will only do this
  on files within the same group. This group is defined in the Parent field"
- (declare (salience 1))
+ (declare (salience 2))
  (object (is-a BinaryFile) (ID ?id) (Parent ?p) (FileContents $?a ?curr $?))
  (object (is-a BinaryFile) (ID ?id1&~?id) (Parent ?p) (FileContents $?b  ?curr2&~?curr $?))
  (test (eq (length ?a) (length ?b)))
  =>
- (assert (Difference ?id ?id1 Bytes ?curr ?curr2)))
-
+ (assert (Difference ?id ?id1 Bytes ?curr ?curr2 at (length ?a))))
+;------------------------------------------------------------------------------
 (defrule PrintoutFoundDifference
- ?diff <- (Difference ?f0 ?f1 Bytes ?c0 ?c1)
+ ?diff <- (Difference ?f0 ?f1 Bytes ?c0 ?c1 at ?ind)
  =>
  (retract ?diff)
  (printout t "In files " ?f0 " and " ?f1 " bytes " ?c0 " and " ?c1 
-  " are different between the respective files" crlf))
-
+  " are different between the respective files at position " ?ind crlf))
+;------------------------------------------------------------------------------
 (defrule PrintoutLengthDifference
  ?diff <- (File ?longer longer than ?shorter by ?difference)
  =>
  (retract ?diff)
  (printout t "File " ?longer " is longer than " ?shorter " by " ?difference 
   " bytes" crlf))
+;------------------------------------------------------------------------------
+(defrule IdentifyTransposition
+ "Does a check to see if two difference facts are actually describing a
+ potential transposition"
+ (declare (salience 1))
+ ?fact0 <- (Difference ?id0 ?id1 Bytes ?c0 ?c1 at ?l)
+ ?fact1 <- (Difference ?id1 ?id0 Bytes ?c1 ?c0 at ?l)
+ =>
+ (retract ?fact0 ?fact1)
+ (assert (Transposed ?id0 ?id1 Bytes ?c0 ?c1 at ?l)))
+;------------------------------------------------------------------------------
+(defrule PrintoutFoundTransposition
+ ?diff <- (Transposed ?f0 ?f1 Bytes ?c0 ?c1 at ?ind)
+ =>
+ (retract ?diff)
+ (printout t "Files " ?f0 " and " ?f1 " have different values at position "
+  ?ind " being " ?c0 " and " ?c1 " respectively." crlf))
+;------------------------------------------------------------------------------
