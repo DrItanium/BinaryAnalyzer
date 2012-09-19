@@ -17,15 +17,12 @@
  (multislot FileContents (type NUMBER SYMBOL)))
 
 (deffunction load-file (?path)
- (open ?path tmpFile)
- (bind ?obj (make-instance (gensym*) of File))
- (bind ?tmp (get-char tmpFile))
- (bind ?contents (create$ ?tmp))
- (while (neq ?tmp -1) do 
- (bind ?contents (create$ ?contents ?tmp))
- (bind ?tmp (get-char tmpFile)))
- (send ?obj put-FileContents ?contents)
- (close tmpFile)
- (return ?obj))
+ (assert (Make file from (load-file-contents ?path (gensym*)))))
 ;------------------------------------------------------------------------------
+
+(defrule MakeFileObject 
+ ?f <- (Make file from $?bytes)
+ =>
+ (retract ?f)
+ (make-instance of File (FileContents $?bytes)))
 
