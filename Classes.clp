@@ -14,15 +14,12 @@
 
 ;------------------------------------------------------------------------------
 (defclass File (is-a ReflectiveObject)
- (multislot FileContents (type NUMBER SYMBOL)))
+ (multislot FileContents (type SYMBOL NUMBER) (cardinality 1 ?VARIABLE))
+ (slot Length (type NUMBER) (access initialize-only)))
+
+(defmessage-handler File init after ()
+ (bind ?self:Length (length$ ?self:FileContents)))
 
 (deffunction load-file (?path)
- (assert (Make file from (load-file-contents ?path (gensym*)))))
+ (make-instance of File (FileContents (load-file-contents ?path (gensym*)))))
 ;------------------------------------------------------------------------------
-
-(defrule MakeFileObject 
- ?f <- (Make file from $?bytes)
- =>
- (retract ?f)
- (make-instance of File (FileContents $?bytes)))
-
