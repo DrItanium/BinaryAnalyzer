@@ -5,21 +5,11 @@
 ;------------------------------------------------------------------------------
 (defclass ReflectiveObject (is-a USER)
  (slot Parent (type SYMBOL) (default nil))
- (slot Type (type SYMBOL))
+ (slot Class (type SYMBOL))
  (slot ID (type SYMBOL)))
 
 (defmessage-handler ReflectiveObject init after ()
- (bind ?self:Type (class ?self))
+ (bind ?self:Class (class ?self))
  (bind ?self:ID (instance-name-to-symbol (instance-name ?self))))
 
-;------------------------------------------------------------------------------
-(defclass File (is-a ReflectiveObject)
- (multislot FileContents (type SYMBOL NUMBER) (cardinality 1 ?VARIABLE))
- (slot Length (type NUMBER) (access initialize-only)))
-
-(defmessage-handler File init after ()
- (bind ?self:Length (length$ ?self:FileContents)))
-
-(deffunction load-file (?path)
- (make-instance of File (FileContents (load-file-contents ?path (gensym*)))))
 ;------------------------------------------------------------------------------
