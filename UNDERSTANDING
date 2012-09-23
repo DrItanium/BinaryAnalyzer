@@ -1,0 +1,5 @@
+So, this toolset will need to be able to 
+1) Provide functions and facts that will automate the process of
+loading and grouping files into classes
+2) Provide the ability to load blocks of bytes
+3) Provide typing facilities to group blocks and files together

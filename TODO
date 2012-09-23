@@ -1,0 +1,9 @@
+1) Create a custom version of clips with
+   a) libnet support
+	b) libpcap support
+	c) libelf support
+2) I want the toolset to be able to
+   a) Load files and properly read them depending on knowledge provided by the
+	user
+	b) Be able to do byte comparisons in files
+	c) 
