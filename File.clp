@@ -122,7 +122,8 @@
  (CS (send ?m .ReadLittleEndianShort))
  (RelocTableOffset (send ?m .ReadLittleEndianShort))
  (OverlayNumber (send ?m .ReadLittleEndianShort)))
- (assert (Compute data start for ?id)))
+ (assert (Compute data start for ?id)
+         (Compute extra data start for ?id)))
 
 
 (defrule ComputeExeDataStart
@@ -133,3 +134,23 @@
  =>
  (retract ?fct)
  (modify-instance ?m (StartOfData (* 16 ?z))))
+
+(defrule ComputeExtraDataStart-PartialLastBlockUsage
+ ?fct <- (Compute extra data start for ?id)
+ ?m <- (object (is-a MZFile) (ID ?id) 
+	 (BytesInLastBlock ?b&:(neq ?b 0))
+	 (BlocksInFile ?bf))
+ =>
+ (retract ?fct)
+ (modify-instance ?m 
+  (ExtraDataStart (- (* 512 ?bf) (- 512 ?b)))))
+
+(defrule ComputeExtraDataStart-FullLastBlockUsage
+ ?fct <- (Compute extra data start for ?id)
+ ?m <- (object (is-a MZFile) (ID ?id) 
+	 (BytesInLastBlock 0) (BlocksInFile ?bf))
+ =>
+ (retract ?fct)
+ (modify-instance ?m 
+  (ExtraDataStart (* 512 ?bf))))
+
