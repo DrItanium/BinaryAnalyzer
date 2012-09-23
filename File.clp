@@ -131,4 +131,5 @@
 	 				(ID ?id) (Length 28)
 	            (HeaderParagraphs ?z))
  =>
+ (retract ?fct)
  (modify-instance ?m (StartOfData (* 16 ?z))))
