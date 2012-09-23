@@ -1,0 +1,6 @@
+(deffunction cat (?path)
+ (system (format nil "cat %s" ?path)))
+(deffunction ls (?path)
+ (system (format nil "ls %s" ?path)))
+(deffunction objdump (?args ?filepath)
+ (system (format nil "objdump %s %s" ?args ?filepath)))
